@@ -6,16 +6,14 @@ import pullprofiles #A lib that grabs your .aws/config file and pulls out just t
 
 
 profiles = pullprofiles.updateprofiles()
-# profiles = ['maximus-Network-Lab.AdministratorAccess','Maximus-Logging.907357815766_ReadOnly'] #in case you want to test with only two profiles
 regions = ["us-east-1","us-west-2"]
 command = "aws ec2 describe-addresses"
-# queryfilter= "HostedZones[?contains(Name, `maximus.com`) == `true`].Name"
 queryfilter= "Addresses[*].[PublicIp]"
 outputfile ="outputEIPS.txt"
 
 outputlist1=[]
 #makes a command from the inputs
-#example - aws ec2 describe-nat-gateways --profile maximus-storage-oneloginreadonly --region us-east-1  --output text  --query NatGateways[*].NatGatewayId
+#example - aws ec2 describe-nat-gateways --profile account123 --region us-east-1  --output text  --query NatGateways[*].NatGatewayId
 def makecommand(region,profile, command, queryfilter):
     output = f'{command} --profile {profile} --region {region}  --output text'
     output = output.split(' ')
