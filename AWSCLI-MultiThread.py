@@ -4,14 +4,14 @@ import concurrent.futures
 import csv
 import pullprofiles #A lib that grabs your .aws/config file and pulls out just the profiles
 
+profiles = pullprofiles.updateprofiles() #grab all the profiles we have access to
 
-profiles = pullprofiles.updateprofiles()
-regions = ["us-east-1","us-west-2"]
-command = "aws ec2 describe-addresses"
-queryfilter= "Addresses[*].[PublicIp]"
-outputfile ="outputEIPS.txt"
+regions = ["us-east-1","us-west-2"] #the regions we'll check
+command = "aws ec2 describe-addresses" #the command we want to run
+queryfilter= "Addresses[*].[PublicIp]" #any query filters for the above command - comment or blank out if none.
+outputfile ="outputEIPS.txt" #the file we'll output to
+outputlist1=[] #the list we'll output to, then drop in the file outputfile
 
-outputlist1=[]
 #makes a command from the inputs
 #example - aws ec2 describe-nat-gateways --profile account123 --region us-east-1  --output text  --query NatGateways[*].NatGatewayId
 def makecommand(region,profile, command, queryfilter):
@@ -23,7 +23,7 @@ def makecommand(region,profile, command, queryfilter):
     # print(output)
     return output
 
-
+#runs the commands and sends the output + account info to the outputlist
 def runcommand(region,profile, command):
     #Makes the command we want to run
     runcommand1 = makecommand(region,profile, command, queryfilter)
@@ -46,6 +46,7 @@ def runcommand(region,profile, command):
             # write.writerow(writeline)
 
 
+#does the multithreading and writes the outputlist to the output file
 def main():
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         for profile in profiles[:]:
