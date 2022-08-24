@@ -20,19 +20,14 @@ def makecommand(region,profile, command, queryfilter):
     if queryfilter:
         output.append("--query")
         output.append(queryfilter)
-    # print(output)
     return output
 
 #runs the commands and sends the output + account info to the outputlist
 def runcommand(region,profile, command):
-    #Makes the command we want to run
-    runcommand1 = makecommand(region,profile, command, queryfilter)
-    #makes a command to pull the account name
-    getaccountNum = makecommand(region,profile, 'aws sts get-caller-identity', '"Account"')
-    #Get the output of command1
-    ngws = subprocess.check_output(runcommand1)
+    runcommand1 = makecommand(region,profile, command, queryfilter) #Makes the command we want to run
+    getaccountNum = makecommand(region,profile, 'aws sts get-caller-identity', '"Account"') #makes a command to pull the account name
+    ngws = subprocess.check_output(runcommand1) #Get the output of command1
     ngwsdecoded =ngws.decode("utf-8") #decode it
-    # print(ngwsdecoded)
     if ngwsdecoded != "": #if we have data:
         account = subprocess.check_output(getaccountNum)# let's pull the account name, too
         accountdecoded = account.decode("utf-8") #decode that
@@ -43,7 +38,6 @@ def runcommand(region,profile, command):
             writeline=[accountdecoded,profile2 ,line] #put all the data we found into a list
             print(writeline)
             outputlist1.append(writeline) #append the data to outputlist1 - a list of lists
-            # write.writerow(writeline)
 
 
 #does the multithreading and writes the outputlist to the output file
@@ -51,7 +45,6 @@ def main():
     with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
         for profile in profiles[:]:
             for region in regions:
-                # print ()
                 profile = profile.strip("\n")
                 future = executor.submit(runcommand, region, profile, command)
     rows = ['account','name', 'output'] #the top rows of the csv
